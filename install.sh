@@ -8,6 +8,10 @@ sudo apt update && \
 sudo apt install -y mongodb-org && \
 sudo systemctl start mongod && \
 sudo systemctl enable mongod
+status=$(sudo systemctl is-active mongod.service)
+ if [ $status != 'active' ]
+ then exit 1
+ fi
 cd $HOME
 git clone -b monolith https://github.com/express42/reddit.git && cd reddit && bundle install
 puma -d
