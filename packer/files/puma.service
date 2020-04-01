@@ -1,0 +1,15 @@
+[Unit]
+Description=Puma HTTP Server
+After=network.target
+
+[Service]
+Type=simple
+
+# Specify the path to your puma application root
+WorkingDirectory=/home/alex-home/reddit
+
+# The command to start Puma
+ExecStart=/usr/local/bin/puma
+
+[Install]
+WantedBy=multi-user.target

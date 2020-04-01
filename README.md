@@ -1,32 +1,26 @@
 # agor-dot_infra
 agor-dot Infra repository
 
-# ДЗ-3
 
-Реализация команды для подключения одной комнандой
-Подключение через одну команду реализовано с помощью способности ssh которая говорит «запустить программу и присосаться к её stdin/out».
+# ДЗ-5
 
-Реализовано через ssh config ~/.ssh/config
+На основе reddit-base был создан расширенный образ reddit-full включающий в себя установленный и рабочий ```puma.service```.
 
-Подключение осущевстляется командой ssh someinternalhost
+Через packer копируется предподготовленный файл сервис юнита ```puma.service```.
+```
+            "type": "file",
+            "source": "files/puma.service",
+            "destination": "/tmp/puma.service"
+```
+После копируется из ```/tmp``` в ```/etc/systemd/system```
+B включается командой ```systemctl enable puma```
 
-Host someinternalhost
-HostName 10.132.0.3
-User alex-home
-ProxyCommand ssh -W %h:%p alex-home@35.205.78.68
-bastion_IP = 35.205.78.68
+Команда на разворот:
 
-someinternalhost_IP = 10.132.0.3
-
-Pritunl+SSL link: https://vpn.35.205.78.68.xip.io/login
-
-# ДЗ-4
-
-testapp_IP = 35.195.91.178
-testapp_port = 9292
-
-## Запуск готового экземпляра c приложением
-```gcloud compute instances create reddit-app-2  --boot-disk-size=10GB   --image-family ubuntu-1604-lts   --image-project=ubuntu-os-cloud   --machine-type=g1-small   --tags puma-server   --restart-on-failure --metadata-from-file startup-script=/home/alex-home/OTUS/agor-dot_infra/install.sh```
-
-## Добавление правила firewall
-```gcloud compute firewall-rules create default-puma-server --action allow --target-tags puma-server --source-ranges 0.0.0.0/0 --rules tcp:9292```
+```
+gcloud compute instances create reddit-full \
+  --boot-disk-size=10GB   \
+  --image-family reddit-full \
+  --machine-type=f1-micro   \
+  --tags puma-server
+```
