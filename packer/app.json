@@ -1,0 +1,24 @@
+{
+  "builders": [
+    {
+      "type": "googlecompute",
+      "project_id": "inra-271511",
+      "image_name": "reddit-app-base-{{timestamp}}",
+      "image_family": "reddit-app-base",
+      "source_image_family": "ubuntu-1604-lts",
+      "disk_size": "10",
+      "disk_type": "pd-standard",
+      "zone": "europe-west1-b",
+      "ssh_username": "alex-home",
+      "machine_type": "f1-micro",
+      "tags": "puma-server"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "script": "scripts/install_ruby.sh",
+      "execute_command": "sudo {{.Path}}"
+    }
+  ]
+}

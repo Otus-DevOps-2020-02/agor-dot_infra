@@ -1,4 +1,4 @@
-*.idea
+.idea/
 *.tfstate
 *.tfstate.*.backup
 *.tfstate.backup
