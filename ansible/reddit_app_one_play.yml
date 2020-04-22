@@ -1,0 +1,55 @@
+---
+- name: Configure hosts & deploy application
+  hosts: all
+  vars:
+    mongo_bind_ip: 0.0.0.0
+    db_host: 10.132.0.50
+  tasks:
+    - name: Change mongo config file
+      become: true # <-- Выполнить задание от root
+      template:
+        src: templates/mongod.conf.j2 # <-- Путь до локального файла-шаблона
+        dest: /etc/mongod.conf # <-- Путь на удаленном хосте
+        mode: 0644 # <-- Правана файл, которые нужно установить
+      tags: db-tag
+      notify: restart mongod
+
+    - name: Clone repo
+      git:
+        repo: https://github.com/express42/reddit.git
+        dest: /home/appuser/reddit
+        version: monolith
+      tags: deploy-tag
+
+    - name: Install bindle
+      bundler:
+        state: present
+        chdir: /home/appuser/redditt
+      tags: deploy-tag
+
+    - name: Add unit file for Puma
+      become: true
+      copy:
+        src: files/puma.service
+        dest: /etc/systemd/system/puma.service
+      tags: app-tag
+      notify: reload puma
+
+    - name: Enable puma
+      become: true
+      systemd: name=puma enabled=yes
+      tags: app-tag
+
+    - name: Add config for DB connection
+      template:
+        src: templates/db_config.j2
+        dest: /home/appuser/db_config
+      tags: app-tag
+
+  handlers:
+    - name: restart mongod
+      become: true
+      service: name=mongod state=restarted daemon-reload=true
+
+    - name: reload puma
+      systemd: name=puma state=restarted

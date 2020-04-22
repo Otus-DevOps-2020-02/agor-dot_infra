@@ -1,0 +1,15 @@
+- name: Deploy app
+  hosts: app
+  tags: deploy-tag
+  become: true
+  tasks:
+    - name: Clone repo
+      git:
+        repo: https://github.com/express42/reddit.git
+        dest: /home/appuser/reddit
+        version: monolith
+
+    - name: Install bundler
+      bundler:
+        state: present
+        chdir: /home/appuser/reddit
