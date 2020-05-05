@@ -18,12 +18,12 @@
     "provisioners": [
 {
 	    "type": "file",
-	    "source": "files/puma.service",
+	    "source": "packer/files/puma.service",
             "destination": "/tmp/puma.service"
 	},
         {
             "type": "shell",
-            "script": "scripts/install_puma.sh",
+            "script": "packer/scripts/install_puma.sh",
             "execute_command": "sudo {{.Path}}"
         }
 
